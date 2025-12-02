@@ -10,9 +10,8 @@ public class TestSimpleFighter {
     monster.name = "Goblin";
     monster.hp = 500;
 
-    while (monster.hp > 0) {
-        hero.hit(monster);
-    }
-
+        while (monster.hp > 0) {
+            hero.hit(monster);
+        }
     }
 }
