@@ -6,11 +6,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class GamePanel extends JPanel {
-    private int playerX = 100;
-    private int playerY = 400;
-    private final int playerW = 40;
-    private final int playerH = 40;
     private final int playerSpeed = 5;
+    private Player player = new Player(100, 400);
     private Enemy enemy = new Enemy(380, 50);
 
     private final List<Bullet> enemyBullets = new ArrayList<>();
@@ -39,7 +36,12 @@ public class GamePanel extends JPanel {
         g.fillRect(0, 0, getWidth(), getHeight());
 
         g.setColor(Color.WHITE);
-        g.fillRect(playerX, playerY, playerW, playerH);
+        g.fillRect(
+            player.getX(),
+            player.getY(),
+            player.getWidth(),
+            player.getHeight()
+        );
 
         g.setColor(Color.YELLOW);
         for (Bullet b : bullets) {
@@ -63,31 +65,23 @@ public class GamePanel extends JPanel {
         im.put(KeyStroke.getKeyStroke("D"), "right");
         am.put("right", new AbstractAction() {
             @Override public void actionPerformed(ActionEvent e) {
-                playerX += playerSpeed;
+                player.move(playerSpeed, 0);
             }
         });
 
         im.put(KeyStroke.getKeyStroke("A"), "left");
         am.put("left", new AbstractAction() {
             @Override public void actionPerformed(ActionEvent e) {
-            playerX -= playerSpeed;
+                player.move(playerSpeed, 0);
             }
         });
 
         im.put(KeyStroke.getKeyStroke("SPACE"), "dor");
         am.put("dor", new AbstractAction() {
             @Override public void actionPerformed(ActionEvent e) {
-                shoot();
+                player.shoot(bullets);
             }
         });
-    }
-
-    private void shoot() {
-        int bulletStartX = playerX + playerW / 2 - 10 / 2; // tengah player
-        int bulletStartY = playerY - playerH / 2; 
-
-        int bulletSpeed = 12;
-        bullets.add(new Bullet(bulletStartX, bulletStartY, -bulletSpeed));
     }
 
     private void updateEnemy() {
