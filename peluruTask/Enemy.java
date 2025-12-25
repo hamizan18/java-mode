@@ -18,9 +18,21 @@ public class Enemy extends Character {
 
     @Override
     public void shoot(List<Bullet> bullets) {
+
+        if (!canShoot()) return;
+
         int bx = x + width / 2 - 5;
         int by = y + height;
 
         bullets.add(new Bullet(bx, by, 8)); // ke bawah
+
+        shootCd = shootDelay + 20;
     }
+
+    @Override
+    public void takeDamage(int dmg) {
+        hp -= dmg;
+        System.out.println("ENEMY HIT! HP: " + hp);
+    }
+    
 }

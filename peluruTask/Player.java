@@ -8,9 +8,20 @@ public class Player extends Character {
 
     @Override
     public void shoot(List<Bullet> bullets) {
+
+        if (!canShoot()) return;
+
         int bx = x + width / 2 - 5;
         int by = y;
 
         bullets.add(new Bullet(bx, by, -12)); // ke atas
+
+        shootCd = shootDelay;
+    }
+
+    @Override
+    public void takeDamage(int dmg) {
+        hp -= dmg;
+        System.out.println("PLAYER HIT! HP: " + hp);
     }
 }

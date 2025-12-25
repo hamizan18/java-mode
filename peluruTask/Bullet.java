@@ -1,3 +1,5 @@
+import java.awt.Rectangle;
+
 public class Bullet {
     public int x, y;
     public int size = 10;
@@ -11,5 +13,9 @@ public class Bullet {
 
     public void update() {
         y += vy;
+    }
+
+    public Rectangle getBounds() {
+        return new Rectangle(x, y, size, size);
     }
 }
