@@ -4,7 +4,7 @@ public class Enemy extends Character {
     private int cooldown = 0;
 
     public Enemy(int x, int y) {
-        super(x, y, 50, 5);
+        super(x, y, 100, 25);
     }
 
     public boolean canShoot() {
@@ -26,7 +26,7 @@ public class Enemy extends Character {
 
         bullets.add(new Bullet(bx, by, 8)); // ke bawah
 
-        shootCd = shootDelay + 20;
+        shootCd = shootDelay + 25;
     }
 
     @Override

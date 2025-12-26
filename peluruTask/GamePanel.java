@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.Rectangle;
 
 public class GamePanel extends JPanel {
+    private GameState gameState = GameState.PLAYING;
     private final int playerSpeed = 5;
     private Player player = new Player(380, 400);
     private Enemy enemy = new Enemy(380, 50);
@@ -14,6 +15,7 @@ public class GamePanel extends JPanel {
     private final List<Bullet> enemyBullets = new ArrayList<>();
     private final List<Bullet> bullets = new ArrayList<>();
     List<Character> characters = new ArrayList<>();
+
     private boolean leftPressed = false;
     private boolean rightPressed = false;
     private boolean shootPressed = false;
@@ -22,13 +24,18 @@ public class GamePanel extends JPanel {
     public GamePanel() {
         setPreferredSize(new Dimension(800, 500));
         setFocusable(true);
-        
+
         characters.add(player);
         characters.add(enemy);
 
         setupKeyBindings();
 
         timer = new Timer(16, e -> {
+
+            if (gameState != GameState.PLAYING) {
+                repaint();
+                return;
+            }
 
             player.updateCd();
             enemy.updateCd();
@@ -51,17 +58,34 @@ public class GamePanel extends JPanel {
         timer.start();
     }
 
-    private void drawHpBar(Graphics g, Character c, int y) {
-        int barWidth = 200;
-        int barHeight = 10;
+    private void drawHpBar(Graphics g, int x, int y, int width, int height, float ratio, Color fillColor) {
+        g.setColor(Color.DARK_GRAY);
+        g.fillRect(x, y, width, height);
 
-        int hpWidth = (int)((double) c.getHp() / c.getMaxHp() * barWidth);
+        g.setColor(fillColor);
+        g.fillRect(x, y, (int)(width * ratio), height);
 
-        g.setColor(Color.GRAY);
-        g.fillRect(20, y, barWidth, barHeight);
+        g.setColor(Color.WHITE);
+        g.drawRect(x, y, width, height);
+    }
 
-        g.setColor(Color.GREEN);
-        g.fillRect(20, y, hpWidth, barHeight);
+    private void drawEndScreen(Graphics g, String text, Color color) {
+        Graphics2D g2 = (Graphics2D) g;
+
+        // Layar gelap
+        g2.setColor(new Color(0, 0, 0, 170));
+        g2.fillRect(0, 0, getWidth(), getHeight());
+
+        // Font
+        g2.setFont(new Font("Arial", Font.BOLD, 48));
+        FontMetrics fm = g2.getFontMetrics();
+
+        int textWidth = fm.stringWidth(text);
+        int x = (getWidth() - textWidth) / 2;
+        int y = getHeight() / 2;
+
+        g2.setColor(color);
+        g2.drawString(text, x, y);
     }
 
     @Override
@@ -71,6 +95,26 @@ public class GamePanel extends JPanel {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, getWidth(), getHeight());
 
+        drawHpBar(
+            g,
+            enemy.getX(),
+            enemy.getY() - 12,
+            enemy.getWidth(),
+            6,
+            enemy.getHpRatio(),
+            Color.RED
+        );
+
+        drawHpBar(
+            g,
+            player.getX(),
+            player.getY() + player.getHeight() + 6,
+            player.getWidth(),
+            6,
+            player.getHpRatio(),
+            Color.GREEN
+        );
+        
         g.setColor(Color.WHITE);
         g.fillRect(
             player.getX(),
@@ -93,10 +137,12 @@ public class GamePanel extends JPanel {
             g.fillOval(b.x, b.y, b.size, b.size);
         }
 
-        // HP BAR
-        drawHpBar(g, enemy, 20);
-        drawHpBar(g, player, getHeight() - 30);
-        
+        if (gameState == GameState.WIN) {
+            drawEndScreen(g, "YOU WIN!", Color.GREEN);
+        }
+        if (gameState == GameState.LOSE) {
+            drawEndScreen(g, "YOU LOSE!", Color.RED);
+        }
     }
 
     private void setupKeyBindings() {
@@ -177,6 +223,9 @@ public class GamePanel extends JPanel {
     }
 
     private void checkCollision() {
+        if (enemy.isDead()) {
+            System.out.println("ENEMY DEAD!");
+        }
         Iterator<Bullet> it = bullets.iterator();
         while(it.hasNext()) {
             Bullet b = it.next();
@@ -189,10 +238,16 @@ public class GamePanel extends JPanel {
             Iterator<Bullet> eit = enemyBullets.iterator();
             while (eit.hasNext()) {
                 Bullet eb = eit.next();
-                if (eb.getBounds().intersects(player.getBounds())) {
-                    player.takeDamage(enemy.damage);
-                    eit.remove();
+                    if (eb.getBounds().intersects(player.getBounds())) {
+                        player.takeDamage(enemy.damage);
+                        eit.remove();
                 }
             }
+            if (enemy.isDead()) {
+                gameState = GameState.WIN;
+            }
+            if (player.isDead()) {
+                gameState = GameState.LOSE;
+            }
         }
-}
+    }

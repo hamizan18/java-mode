@@ -32,6 +32,8 @@ public abstract class Character {
     }
     public void takeDamage(int dmg) {
         hp -= dmg;
+
+        if (hp < 0) hp = 0;
     }
 
     public boolean isDead() {
@@ -40,6 +42,15 @@ public abstract class Character {
 
     public Rectangle getBounds() {
         return new Rectangle(x, y, width, height);
+    }
+
+    public float getHpRatio() {
+        float ratio = (float) hp / maxHp;
+
+        if (ratio < 0f) ratio = 0f;
+        if (ratio > 1f) ratio = 1f;
+
+        return ratio;
     }
 
     public void move(int dx, int dy) {

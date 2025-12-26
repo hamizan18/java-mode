@@ -14,7 +14,7 @@ public class Player extends Character {
         int bx = x + width / 2 - 5;
         int by = y;
 
-        bullets.add(new Bullet(bx, by, -12)); // ke atas
+        bullets.add(new Bullet(bx, by, -12)); // ke at
 
         shootCd = shootDelay;
     }
